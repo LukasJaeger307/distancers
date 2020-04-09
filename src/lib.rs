@@ -37,6 +37,15 @@ mod tests {
         let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0];
         assert_eq!(vec1.euclidean_distance(&vec2), -1.0);
     }
+
+    #[test]
+    fn test_get_euclidean_distance_weighted()  {
+        let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0, 2.0];
+        let weights : Vec<f64> = vec![0.2, 0.4, 0.6, 0.8];
+        assert_eq!(vec1.euclidean_distance_weighted(
+                &vec2, &weights), 2.23606797749979);
+    }
     
     #[test]
     fn test_get_cosine_distance() {
@@ -51,5 +60,13 @@ mod tests {
         let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0];
         assert_eq!(vec1.cosine_distance(&vec2), -1.0);
     }
-
+    
+    #[test]
+    fn test_get_cosine_distance_weighted()  {
+        let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0, 2.0];
+        let weights : Vec<f64> = vec![0.2, 0.4, 0.6, 0.8];
+        assert_eq!(vec1.cosine_distance_weighted(
+                &vec2, &weights), 0.1339745962155614);
+    }
 }

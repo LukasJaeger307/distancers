@@ -19,8 +19,10 @@
  */                                          
 
 pub trait Distances<T> {
-    fn euclidean_distance(&self, other: &T) -> f64;
-    fn cosine_distance(&self, other: &T) -> f64;
+    fn euclidean_distance(&self, other : &T) -> f64;
+    fn euclidean_distance_weighted(&self, other : &T, weights : &T) -> f64;
+    fn cosine_distance(&self, other : &T) -> f64;
+    fn cosine_distance_weighted(&self, other : &T, weights : &T) -> f64;
 }
 
 impl Distances<Vec<f64>> for Vec<f64> {
@@ -31,6 +33,19 @@ impl Distances<Vec<f64>> for Vec<f64> {
             let mut distance : f64 = 0.0;
             for i in 0..self.len() {
                 distance += (self[i] - other[i]).powf(2.0);
+            }
+            distance.sqrt()
+        }
+    }
+
+    fn euclidean_distance_weighted(&self, other : &Vec<f64>, 
+                                   weights : &Vec<f64>) -> f64 {
+        if self.len() != other.len() || self.len() != weights.len() {
+            -1.0
+        } else {
+            let mut distance : f64 = 0.0;
+            for i in 0..self.len() {
+                distance += weights[i] * (self[i] - other[i]).powf(2.0);
             }
             distance.sqrt()
         }
@@ -47,6 +62,24 @@ impl Distances<Vec<f64>> for Vec<f64> {
                 dividend += self[i] * other[i];
                 left_divisor += self[i].powf(2.0);
                 right_divisor += other[i].powf(2.0);
+            }
+            let divisor = left_divisor.sqrt() * right_divisor.sqrt();
+            1.0 - (dividend / divisor)
+        }
+    }
+    
+    fn cosine_distance_weighted(&self, other : &Vec<f64>, 
+                                   weights : &Vec<f64>) -> f64 {
+        if self.len() != other.len() || self.len() != weights.len() {
+            -1.0
+        } else {
+            let mut dividend : f64 = 0.0;
+            let mut left_divisor : f64 = 0.0;
+            let mut right_divisor : f64 = 0.0;
+            for i in 0..self.len() {
+                dividend += weights[i] * self[i] * other[i];
+                left_divisor += weights[i] * self[i].powf(2.0);
+                right_divisor += weights[i] * other[i].powf(2.0);
             }
             let divisor = left_divisor.sqrt() * right_divisor.sqrt();
             1.0 - (dividend / divisor)
