@@ -1,0 +1,3 @@
+# Distancers - A distance measuring library for Rust
+
+I should really write more here...
