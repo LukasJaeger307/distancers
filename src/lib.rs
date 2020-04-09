@@ -18,7 +18,7 @@
  *  <https://www.gnu.org/licenses/>.
  */                                          
 
-mod distances;
+pub mod distances;
 
 #[cfg(test)]
 mod tests {
