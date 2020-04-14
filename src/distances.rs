@@ -16,9 +16,17 @@
  *  You should have received a copy of the GNU General Public
  *  License along with distancers.  If not, see
  *  <https://www.gnu.org/licenses/>.
- */                                          
+ */
+
+pub enum DistanceMeasure {
+    Euclidean,
+    Cosine,
+}
 
 pub trait Distances<T> {
+    fn distance(&self, other : &T, measure : DistanceMeasure) -> f64;
+    fn distance_weighted(&self, other : &T, weights : &T, 
+                         measure : DistanceMeasure) -> f64;
     fn euclidean_distance(&self, other : &T) -> f64;
     fn euclidean_distance_weighted(&self, other : &T, weights : &T) -> f64;
     fn cosine_distance(&self, other : &T) -> f64;
@@ -26,9 +34,33 @@ pub trait Distances<T> {
 }
 
 impl Distances<Vec<f64>> for Vec<f64> {
+    
+    fn distance(&self, other : &Vec<f64>, measure : DistanceMeasure) -> f64 {
+        match measure {
+            DistanceMeasure::Euclidean => {
+                self.euclidean_distance(other)
+            },
+            DistanceMeasure::Cosine => {
+                self.cosine_distance(other)
+            },
+        }
+    }
+
+    fn distance_weighted(&self, other : &Vec<f64>, weights : &Vec<f64>, 
+                         measure : DistanceMeasure) -> f64 {
+        match measure {
+            DistanceMeasure::Euclidean => {
+                self.euclidean_distance_weighted(other, weights)
+            },
+            DistanceMeasure::Cosine => {
+                self.cosine_distance_weighted(other, weights)
+            }
+        }
+    }
+    
     fn euclidean_distance(&self, other : &Vec<f64>) -> f64 {
         if self.len() != other.len() {
-            -1.0
+            std::f64::NAN
         } else {
             let mut distance : f64 = 0.0;
             for i in 0..self.len() {
@@ -41,7 +73,7 @@ impl Distances<Vec<f64>> for Vec<f64> {
     fn euclidean_distance_weighted(&self, other : &Vec<f64>, 
                                    weights : &Vec<f64>) -> f64 {
         if self.len() != other.len() || self.len() != weights.len() {
-            -1.0
+            std::f64::NAN
         } else {
             let mut distance : f64 = 0.0;
             for i in 0..self.len() {
@@ -53,7 +85,7 @@ impl Distances<Vec<f64>> for Vec<f64> {
 
     fn cosine_distance(&self, other : &Vec<f64>) -> f64 {
         if self.len() != other.len() {
-            -1.0
+            std::f64::NAN
         } else {
             let mut dividend : f64 = 0.0;
             let mut left_divisor : f64 = 0.0;
@@ -71,7 +103,7 @@ impl Distances<Vec<f64>> for Vec<f64> {
     fn cosine_distance_weighted(&self, other : &Vec<f64>, 
                                    weights : &Vec<f64>) -> f64 {
         if self.len() != other.len() || self.len() != weights.len() {
-            -1.0
+            std::f64::NAN
         } else {
             let mut dividend : f64 = 0.0;
             let mut left_divisor : f64 = 0.0;

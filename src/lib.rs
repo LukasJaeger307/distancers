@@ -23,6 +23,7 @@ pub mod distances;
 #[cfg(test)]
 mod tests {
     use crate::distances::Distances;
+    use crate::distances::DistanceMeasure;
 
     #[test]
     fn test_get_euclidean_distance() {
@@ -35,7 +36,7 @@ mod tests {
     fn test_get_euclidean_distance_different_vector_size() {
         let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
         let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0];
-        assert_eq!(vec1.euclidean_distance(&vec2), -1.0);
+        assert!(vec1.euclidean_distance(&vec2).is_nan());
     }
 
     #[test]
@@ -58,7 +59,7 @@ mod tests {
     fn test_get_cosine_distance_different_vector_size() {
         let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
         let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0];
-        assert_eq!(vec1.cosine_distance(&vec2), -1.0);
+        assert!(vec1.cosine_distance(&vec2).is_nan());
     }
     
     #[test]
@@ -68,5 +69,41 @@ mod tests {
         let weights : Vec<f64> = vec![0.2, 0.4, 0.6, 0.8];
         assert_eq!(vec1.cosine_distance_weighted(
                 &vec2, &weights), 0.1339745962155614);
+    }
+
+    #[test]
+    fn test_get_distance_euclidean(){
+        let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0, 2.0];
+        assert_eq!(vec1.distance(&vec2, DistanceMeasure::Euclidean), 
+                   3.1622776601683795);
+    }
+
+    #[test]
+    fn test_get_distance_weighted_euclidean()  {
+        let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0, 2.0];
+        let weights : Vec<f64> = vec![0.2, 0.4, 0.6, 0.8];
+        assert_eq!(vec1.distance_weighted(&vec2, &weights,
+                                          DistanceMeasure::Euclidean), 
+                   2.23606797749979);
+    }
+    
+    #[test]
+    fn test_get_distance_cosine() {
+        let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0, 2.0];
+        assert_eq!(vec1.distance(&vec2, DistanceMeasure::Cosine), 
+                   0.16666666666666663);
+    }
+
+    #[test]
+    fn test_get_distance_weighted_cosine()  {
+        let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0, 2.0];
+        let weights : Vec<f64> = vec![0.2, 0.4, 0.6, 0.8];
+        assert_eq!(vec1.distance_weighted(
+                &vec2, &weights, DistanceMeasure::Cosine), 
+            0.1339745962155614);
     }
 }
