@@ -21,6 +21,7 @@
 pub enum DistanceMeasure {
     Euclidean,
     Cosine,
+    Manhattan,
 }
 
 pub trait Distances<T> {
@@ -31,6 +32,8 @@ pub trait Distances<T> {
     fn euclidean_distance_weighted(&self, other : &T, weights : &T) -> f64;
     fn cosine_distance(&self, other : &T) -> f64;
     fn cosine_distance_weighted(&self, other : &T, weights : &T) -> f64;
+    fn manhattan_distance(&self, other : &T) -> f64;
+    fn manhattan_distance_weighted(&self, other : &T, weights : &T) -> f64;
 }
 
 impl Distances<Vec<f64>> for Vec<f64> {
@@ -43,6 +46,9 @@ impl Distances<Vec<f64>> for Vec<f64> {
             DistanceMeasure::Cosine => {
                 self.cosine_distance(other)
             },
+            DistanceMeasure::Manhattan => {
+                self.manhattan_distance(other)
+            }
         }
     }
 
@@ -54,6 +60,9 @@ impl Distances<Vec<f64>> for Vec<f64> {
             },
             DistanceMeasure::Cosine => {
                 self.cosine_distance_weighted(other, weights)
+            }
+            DistanceMeasure::Manhattan => {
+                self.manhattan_distance_weighted(other, weights)
             }
         }
     }
@@ -115,6 +124,31 @@ impl Distances<Vec<f64>> for Vec<f64> {
             }
             let divisor = left_divisor.sqrt() * right_divisor.sqrt();
             1.0 - (dividend / divisor)
+        }
+    }
+    
+    fn manhattan_distance(&self, other : &Vec<f64>) -> f64 {
+        if self.len() != other.len() {
+            std::f64::NAN
+        } else {
+            let mut distance : f64 = 0.0;
+            for i in 0..self.len() {
+                distance += (self[i] - other[i]).abs();
+            }
+            distance
+        }
+    }
+
+    fn manhattan_distance_weighted(&self, other : &Vec<f64>, weights : &Vec<f64>) 
+        -> f64 {
+        if self.len() != other.len() {
+            std::f64::NAN
+        } else {
+            let mut distance : f64 = 0.0;
+            for i in 0..self.len() {
+                distance += weights[i] * (self[i] - other[i]).abs();
+            }
+            distance
         }
     }
 }
