@@ -93,6 +93,20 @@ mod tests {
         assert_eq!(vec1.manhattan_distance_weighted(
                 &vec2, &weights), 3.0);
     }
+    
+    #[test]
+    fn test_get_rmse_distance() {
+        let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0, 2.0];
+        assert_eq!(vec1.rmse_distance(&vec2), 1.5811388300841898);
+    }
+
+    #[test]
+    fn test_get_rmse_distance_different_vector_size() {
+        let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0];
+        assert!(vec1.rmse_distance(&vec2).is_nan());
+    }
 
     #[test]
     fn test_get_distance_euclidean(){
@@ -146,5 +160,22 @@ mod tests {
         assert_eq!(vec1.distance_weighted(
                 &vec2, &weights, DistanceMeasure::Manhattan), 
             3.0);
+    }
+    
+    #[test]
+    fn test_get_distance_rmse() {
+        let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0, 2.0];
+        assert_eq!(vec1.distance(&vec2, DistanceMeasure::RMSE), 
+            1.5811388300841898);
+    }
+
+    #[test]
+    fn test_get_distance_weighted_rmse()  {
+        let vec1 : Vec<f64> = vec![1.0, 2.0, 3.0, 4.0];
+        let vec2 : Vec<f64> = vec![3.0, 1.0, 4.0, 2.0];
+        let weights : Vec<f64> = vec![0.2, 0.4, 0.6, 0.8];
+        assert!(vec1.distance_weighted(
+                &vec2, &weights, DistanceMeasure::RMSE).is_nan());
     }
 }

@@ -1,27 +1,20 @@
 /*
  *  (c) 2020, Lukas Jäger
  *
- *  This file is part of distancers.
+ * This program is free software. It comes without any warranty, to
+ * the extent permitted by applicable law. You can redistribute it
+ * and/or modify it under the terms of the Do What The Fuck You Want
+ * To Public License, Version 2, as published by Sam Hocevar. See
+ * http://www.wtfpl.net/ for more details.  
  *
- *  distancers is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  distancers is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public
- *  License along with distancers.  If not, see
- *  <https://www.gnu.org/licenses/>.
  */
+
 
 pub enum DistanceMeasure {
     Euclidean,
     Cosine,
     Manhattan,
+    RMSE,
 }
 
 pub trait Distances<T> {
@@ -34,6 +27,7 @@ pub trait Distances<T> {
     fn cosine_distance_weighted(&self, other : &T, weights : &T) -> f64;
     fn manhattan_distance(&self, other : &T) -> f64;
     fn manhattan_distance_weighted(&self, other : &T, weights : &T) -> f64;
+    fn rmse_distance(&self, other : &T) -> f64;
 }
 
 impl Distances<Vec<f64>> for Vec<f64> {
@@ -49,6 +43,9 @@ impl Distances<Vec<f64>> for Vec<f64> {
             DistanceMeasure::Manhattan => {
                 self.manhattan_distance(other)
             }
+            DistanceMeasure::RMSE => {
+                self.rmse_distance(other)
+            }
         }
     }
 
@@ -63,6 +60,9 @@ impl Distances<Vec<f64>> for Vec<f64> {
             }
             DistanceMeasure::Manhattan => {
                 self.manhattan_distance_weighted(other, weights)
+            }
+            DistanceMeasure::RMSE => {
+                std::f64::NAN
             }
         }
     }
@@ -149,6 +149,19 @@ impl Distances<Vec<f64>> for Vec<f64> {
                 distance += weights[i] * (self[i] - other[i]).abs();
             }
             distance
+        }
+    }
+
+    fn rmse_distance(&self, other : &Vec<f64>) -> f64 {
+        if self.len() != other.len() {
+            std::f64::NAN
+        } else {
+            let mut distance: f64 = 0.0;
+            for i in 0..self.len() {
+                distance += (self[i] - other[i]).powf(2.0);
+            }
+            distance /= self.len() as f64;
+            distance.sqrt()
         }
     }
 }
